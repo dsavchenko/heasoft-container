@@ -4,15 +4,15 @@ comm=${@:-fversion}
 
 if [[ -z $USER_ID ]]; then
 	echo "Starting with default username: heasoft"
-	exec /usr/sbin/gosu heasoft "$comm"
 elif [[ -z $GROUP_ID ]]; then
 	if ! [[ $USER_ID =~ ^[0-9]+$ ]] ; then
 		echo "LOCAL_UID is wrong"
 		exit 1
 	fi
 	echo "Starting with UID : $USER_ID"
-	useradd --shell /bin/bash -u $USER_ID -o -m user
-	export HOME=/home/user
+	usermod -u $USER_ID heasoft
+	chown -Rh heasoft /home/heasoft
+	chown -Rh heasoft /opt/heasoft
 else
 	if ! [[ $USER_ID =~ ^[0-9]+$ ]] ; then
 		echo "LOCAL_UID is wrong"
@@ -23,9 +23,10 @@ else
 		exit 1
 	fi
 	echo "Starting with UID $USER_ID and GID $GROUP_ID"
-	groupadd -o -g $GROUP_ID user
-	useradd --shell /bin/bash -u $USER_ID -g $GROUP_ID -o -m user
-	export HOME=/home/user
+	usermod -u $USER_ID heasoft
+	groupmod -g $GROUP_ID heasoft
+	chown -Rh heasoft:heasoft /home/heasoft
+	chown -Rh heasoft:heasoft /opt/heasoft
 fi
 
-exec /usr/sbin/gosu user "$comm"
+exec /usr/sbin/gosu heasoft "$comm"

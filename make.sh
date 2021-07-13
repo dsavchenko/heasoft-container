@@ -22,6 +22,7 @@ function install_kernel {
 	  "-v", "{connection_file}:/connection-spec",
 	  "-e", "DISPLAY",
 	  "--env", "USER_ID=`id -u`",
+	  "--env", "GROUP_ID=`id -g`",
 	  ${mntpar}
 	  "${IMAGE}",
 	  "python",
@@ -37,7 +38,14 @@ function install_kernel {
 }
 
 function run_container {
-	/usr/bin/docker run --rm -v "/tmp/.X11-unix:/tmp/.X11-unix:ro" -e DISPLAY --env USER_ID=`id -u` ${shmntpar} -it ${IMAGE} $@
+	/usr/bin/docker run \
+		--rm -v "/tmp/.X11-unix:/tmp/.X11-unix:ro" \
+		-e DISPLAY \
+		--env USER_ID=`id -u` \
+		--env GROUP_ID=`id -g` \
+		${shmntpar} \
+		-it ${IMAGE} \
+		$@
 }
 
 $@

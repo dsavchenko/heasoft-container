@@ -11,6 +11,7 @@ RUN apt-get update \
 			python3-pyvo \
 			python3-scipy \
 			python3-ipykernel \
+			python3-h5py \
 			gosu \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*	

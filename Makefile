@@ -1,5 +1,5 @@
 image=densavchenko/heasoft:v6.28-ipy0.1
-mounts=${HOME}/heasoft-container-data:/data:rw
+mounts=${HOME}/heasoft-container-data:/home/heasoft/data:rw
 
 build:
 	docker build -t ${image} .
