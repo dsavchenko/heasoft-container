@@ -14,6 +14,7 @@ RUN apt-get update \
 			gosu \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*	
+RUN pip install cython && pip install bxa
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh

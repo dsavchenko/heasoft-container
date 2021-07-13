@@ -1,8 +1,10 @@
 #!/bin/bash
 
+comm=${@:-fversion}
+
 if [[ -z $USER_ID ]]; then
 	echo "Starting with default username: heasoft"
-	exec /usr/sbin/gosu heasoft "$@"
+	exec /usr/sbin/gosu heasoft "$comm"
 elif [[ -z $GROUP_ID ]]; then
 	if ! [[ $USER_ID =~ ^[0-9]+$ ]] ; then
 		echo "LOCAL_UID is wrong"
@@ -26,4 +28,4 @@ else
 	export HOME=/home/user
 fi
 
-exec /usr/sbin/gosu user "$@"
+exec /usr/sbin/gosu user "$comm"

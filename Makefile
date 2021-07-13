@@ -9,3 +9,6 @@ push: build
 
 install_kernel:
 	IMAGE=${image} MOUNTS=${mounts} bash make.sh install_kernel
+
+run_bash:
+	IMAGE=${image} MOUNTS=${mounts} bash make.sh run_container bash

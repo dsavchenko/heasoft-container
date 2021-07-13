@@ -1,8 +1,12 @@
+set -x
+
 IMAGE=${IMAGE:-densavchenko/heasoft}
 
 mntpar=""
+shmntpar=""
 for mount in $MOUNTS; do
 	mntpar=$mntpar"\"-v\", \"$mount\", " 
+	shmntpar=$shmntpar"-v $mount"
 done
 
 function install_kernel {
@@ -17,7 +21,7 @@ function install_kernel {
 	  "--network=host",
 	  "-v", "{connection_file}:/connection-spec",
 	  "-e", "DISPLAY",
-	  "--env", "USER_ID=1001",
+	  "--env", "USER_ID=`id -u`",
 	  ${mntpar}
 	  "${IMAGE}",
 	  "python",
@@ -30,6 +34,10 @@ function install_kernel {
 	"language": "python"
 	}
 	EOF
+}
+
+function run_container {
+	/usr/bin/docker run --rm -v "/tmp/.X11-unix:/tmp/.X11-unix:ro" -e DISPLAY --env USER_ID=`id -u` ${shmntpar} -it ${IMAGE} $@
 }
 
 $@
