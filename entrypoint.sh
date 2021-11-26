@@ -29,4 +29,4 @@ else
 	chown -Rh heasoft:heasoft /opt/heasoft
 fi
 
-exec /usr/sbin/gosu heasoft "$comm"
+exec /usr/sbin/gosu heasoft $comm
