@@ -1,4 +1,5 @@
-FROM densavchenko/heasoft:v6.28
+ARG BASEIMAGE
+FROM ${BASEIMAGE}
 
 USER root
 
