@@ -17,10 +17,12 @@ RUN apt-get update \
 			saods9 \
 			vim \
 			less \
+			git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*	
 RUN sed -i 's/exec/exec \/usr\/bin\/env -u LD_LIBRARY_PATH/' /usr/bin/ds9
-RUN pip install cython && pip install bxa
+RUN pip install cython 
+	# && pip install bxa
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
