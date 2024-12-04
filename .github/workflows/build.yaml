@@ -1,0 +1,60 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME_BASE: "heasoft"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Log in to GHCR
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Get base image version
+      id: basever
+      run: |
+        BASE_VERSION=$(jq -r '.base_version' pkg_conf.json)
+        echo "base_version=$BASE_VERSION" >> $GITHUB_OUTPUT
+    
+    - name: Check if image exists
+      id: check-image
+      run: |
+        IMAGE_NAME=${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME_BASE }}
+        IMAGE_TAG=${{ steps.basever.outputs.base_version }}
+        if docker manifest inspect $IMAGE_NAME:$IMAGE_TAG > /dev/null 2>&1; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Donwnload and unpack base container image
+      if: steps.check-image.outputs.exists == 'false'
+      run: |
+        BASE_VERSION=${{ steps.basever.outputs.base_version }}
+        curl -O https://heasarc.gsfc.nasa.gov/FTP/software/lheasoft/release/heasoft-${BASE_VERSION}.tar
+        tar -xf heasoft-${BASE_VERSION}.tar --one-top-level
+  
+    - name: Build and push base image
+      if: steps.check-image.outputs.exists == 'false'
+      run: |
+        IMAGE_NAME=${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME_BASE }}
+        IMAGE_TAG=${{ steps.basever.outputs.base_version }}
+        cd heasoft-${IMAGE_TAG}
+        docker build -t $IMAGE_NAME:$IMAGE_TAG .
+        docker push $IMAGE_NAME:$IMAGE_TAG
