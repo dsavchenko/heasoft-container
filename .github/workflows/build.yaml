@@ -65,5 +65,5 @@ jobs:
         BASE_TAG=${{ steps.basever.outputs.base_version }}
         COMMIT=$(git rev-parse --short HEAD)
         IMAGE_TAG=${BASE_TAG}-python-${COMMIT}
-        docker build --build_arg BASEIMAGE=$IMAGE_NAME:$BASE_TAG -t $IMAGE_NAME:$IMAGE_TAG .
+        docker build --build-arg BASEIMAGE=$IMAGE_NAME:$BASE_TAG -t $IMAGE_NAME:$IMAGE_TAG .
         docker push $IMAGE_NAME:$IMAGE_TAG
